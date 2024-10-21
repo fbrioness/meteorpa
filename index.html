@@ -18,28 +18,44 @@
     <select id="regionSelect">
         <option value="">Selecciona una región</option>
         <option value="-18.4783,-70.3126,-18.4783,-70.3126">Arica y Parinacota - Arica</option>
-        <!-- Agrega más regiones según sea necesario -->
+        <option value="-20.2133,-70.1578,-20.2133,-70.1578">Tarapacá - Iquique</option>
+        <option value="-23.6500,-70.4000,-23.6500,-70.4000">Antofagasta - Antofagasta</option>
+        <option value="-27.3667,-70.3333,-27.3667,-70.3333">Atacama - Copiapó</option>
+        <option value="-29.9533,-71.3395,-29.9533,-71.3395">Coquimbo - La Serena</option>
+        <option value="-32.8905,-71.2489,-32.8905,-71.2489">Valparaíso - Valparaíso</option>
+        <option value="-33.4489,-70.6693,-33.4489,-70.6693">Región Metropolitana - Santiago</option>
+        <option value="-34.1708,-70.7444,-34.1708,-70.7444">O'Higgins - Rancagua</option>
+        <option value="-35.4264,-71.6554,-35.4264,-71.6554">Maule - Talca</option>
+        <option value="-36.8260,-73.0498,-36.8260,-73.0498">Biobío - Concepción</option>
+        <option value="-36.6066,-72.1034,-36.6066,-72.1034">Ñuble - Chillán</option>
+        <option value="-38.7359,-72.5904,-38.7359,-72.5904">La Araucanía - Temuco</option>
+        <option value="-39.8196,-73.2459,-39.8196,-73.2459">Los Ríos - Valdivia</option>
+        <option value="-41.4689,-72.9411,-41.4689,-72.9411">Los Lagos - Puerto Montt</option>
+        <option value="-45.5711,-72.0683,-45.5711,-72.0683">Aysén - Coyhaique</option>
+        <option value="-53.1638,-70.9171,-53.1638,-70.9171">Magallanes - Punta Arenas</option>
     </select>
 </div>
 
 <div class="panel">
-    <!-- Logo si lo tienes -->
+    <!-- Logo (descomenta y ajusta la ruta si tienes un logo) -->
     <!-- <img src="ruta_al_logo/logo-dga.png" alt="Logo DGA" class="logo-dga"> -->
 
-    <!-- Contenedor del iframe con proporción 9:16 -->
+    <!-- Contenedor del iframe de Windy con proporción 9:16 -->
     <div class="iframe-container windy-iframe">
         <iframe id="windyFrame" src="" allowfullscreen></iframe>
     </div>
 
-    <!-- Contenedor para los iframes de la derecha (si tienes otros iframes) -->
+    <!-- Si tienes otros iframes, puedes agregarlos aquí -->
+    <!--
     <div class="right-iframes">
-        <!-- Si tienes otros iframes, agrégalos aquí -->
-        <!-- Ejemplo:
         <div class="iframe-container top-right-iframe">
             <iframe src="otra_url"></iframe>
         </div>
-        -->
+        <div class="iframe-container bottom-right-iframe">
+            <iframe src="otra_url"></iframe>
+        </div>
     </div>
+    -->
 </div>
 
 <!-- Contenedor para el índice KP -->
@@ -53,7 +69,7 @@
 
     function updateIframe(lat, lon, detailLat, detailLon) {
         const baseUrl = 'https://embed.windy.com/embed.html';
-        const params = `?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=m/s&zoom=7&overlay=satellite&product=satellite&level=surface&lat=${lat}&lon=${lon}&detailLat=${detailLat}&detailLon=${detailLon}&detail=true`;
+        const params = `?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=7&overlay=satellite&product=satellite&level=surface&lat=${lat}&lon=${lon}&detailLat=${detailLat}&detailLon=${detailLon}&detail=true`;
         const src = baseUrl + params;
         windyFrame.src = src;
     }
