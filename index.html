@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Estilos CSS -->
     <style>
+        /* Estilos globales */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: auto;
+            font-family: Arial, sans-serif;
         }
+
+        /* Estilos del control de selección */
         #controls {
             position: fixed;
             top: 0;
@@ -21,20 +25,29 @@
             padding: 10px;
             box-sizing: border-box;
         }
+
         #controls select {
             font-size: 16px;
-            margin-right: 10px;
             width: 100%;
             max-width: 400px;
+            padding: 8px;
         }
-        /* Contenedor para mantener la proporción 9:16 */
-        .iframe-container {
+
+        /* Contenedor para el mapa de Windy */
+        #windyContainer {
+            margin-top: 60px; /* Altura del control de selección */
+            width: 100%;
+        }
+
+        /* Estilos para mantener la proporción 9:16 */
+        .responsive-iframe {
             position: relative;
             width: 100%;
             padding-top: 177.78%; /* (16 / 9) * 100% */
             overflow: hidden;
         }
-        .iframe-container iframe {
+
+        .responsive-iframe iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -42,19 +55,33 @@
             height: 100%;
             border: none;
         }
-        /* Contenedor para el índice KP */
+
+        /* Contenedor para el Índice KP */
         #kpIndexContainer {
             width: 100%;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 10px;
             box-sizing: border-box;
+        }
+
+        /* Ajustes para pantallas más grandes */
+        @media (min-width: 768px) {
+            #controls select {
+                max-width: 300px;
+            }
+
+            .responsive-iframe {
+                padding-top: 56.25%; /* (9 / 16) * 100% */
+            }
         }
     </style>
     <!-- Scripts necesarios -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Highcharts JS -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
-    <!-- Cargar moment.js antes que moment-timezone -->
+    <!-- Moment.js y Moment Timezone -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <!-- Cargar moment-timezone después de moment.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
 </head>
 <body>
@@ -81,12 +108,14 @@
     </select>
 </div>
 
-<!-- Contenedor del iframe con proporción 9:16 -->
-<div class="iframe-container">
-    <iframe id="windyFrame" src="" allowfullscreen></iframe>
+<!-- Contenedor del mapa de Windy -->
+<div id="windyContainer">
+    <div class="responsive-iframe">
+        <iframe id="windyFrame" src="" allowfullscreen></iframe>
+    </div>
 </div>
 
-<!-- Contenedor para el índice KP -->
+<!-- Contenedor para el Índice KP -->
 <div id="kpIndexContainer"></div>
 
 <!-- Scripts -->
@@ -112,7 +141,7 @@
     // Cargar una ubicación predeterminada al inicio (por ejemplo, Santiago)
     updateIframe(-33.4489, -70.6693, -33.4489, -70.6693);
 
-    // Código JavaScript para el índice KP
+    // Código JavaScript para el Índice KP
     $(document).ready(function() {
         $.getJSON('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', function(response) {
             // Eliminar el encabezado de la respuesta
@@ -124,16 +153,19 @@
             const filteredData = data.filter(item => moment(item[0]).isBetween(twoDaysAgo, now));
 
             const categories = filteredData.map(item => {
-                const start = moment.tz(item[0], "America/Santiago");
+                const start = moment.tz(item[0], "UTC").tz("America/Santiago");
                 const end = start.clone().add(3, 'hours');
-                return `${start.format('DD-MMMM HH:mm')} a ${end.format('HH:mm')}`;
+                return `${start.format('DD-MM HH:mm')} a ${end.format('HH:mm')}`;
             });
             const values = filteredData.map(item => parseFloat(item[1]));
 
             Highcharts.chart('kpIndexContainer', {
                 chart: {
                     type: 'column',
-                    backgroundColor: '#f0f0f0'
+                    backgroundColor: '#f0f0f0',
+                    style: {
+                        fontFamily: 'Arial, sans-serif'
+                    }
                 },
                 title: {
                     text: 'Índice K Planetario Estimado (Últimas 48 horas)'
@@ -170,6 +202,9 @@
                 }],
                 exporting: {
                     enabled: false // Deshabilita el botón de exportación en el gráfico
+                },
+                credits: {
+                    enabled: false // Oculta el enlace de Highcharts
                 }
             });
         });
