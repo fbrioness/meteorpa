@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteorología</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="panel">
+        <img src="https://dga.mop.gob.cl/common/images/dga.jpg" alt="Logo DGA" class="logo-dga">
+        <!-- Iframe de Windy a la izquierda -->
+        <iframe id="windy-iframe" width="550" height="1030" src="https://embed.windy.com/embed2.html?lat=-40.246&lon=-72.026&detailLat=-36.440&detailLon=-70.6500&width=550&height=1030&zoom=5&level=surface&overlay=satellite&product=satellite&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
+        <div class="iframe-container">
+            <iframe id="instagram-1" src="https://www.instagram.com/mop_cl/embed" width="550" height="515" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+            <iframe id="instagram-2" src="https://fbrioness.github.io/KPindex/" width="550" height="515" frameborder="0" scrolling="no" allowtransparency="true"></iframe>    
+        </div>
+        <!-- Contenedor para los iframes de la derecha -->
+        <div class="right-iframes">
+            <!-- Iframe superior derecho -->
+            <iframe id="video-iframe" src="https://www.youtube.com/embed/wALLwCjrg3A?si=O5KjozPgGFpqPvJK" width="820" height="463" allow="" fullscreen encrypted-media" allowfullscreen="" allowscriptaccess="always" scrolling="no"></iframe>
+            <!-- Iframe inferior derecho -->
+            <iframe id="meteoblue-iframe" class="bottom-right-iframe" src="https://www.meteoblue.com/es/tiempo/widget/daily/santiago-de-chile_chile_3871336?geoloc=fixed&days=7&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&precipunit=MILLIMETER&coloured=coloured&pictoicon=0&pictoicon=1&maxtemperature=0&maxtemperature=1&mintemperature=0&mintemperature=1&windspeed=0&windspeed=1&windgust=0&winddirection=0&winddirection=1&uv=0&humidity=0&precipitation=0&precipitation=1&precipitationprobability=0&precipitationprobability=1&spot=0&spot=1&pressure=0&layout=light" frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="width: 820px; height: 560px"></iframe>
+        </div>
+    </div>
+    <script>
+            document.getElementById('video-iframe').addEventListener('load', function() {
+            const iframe = document.getElementById('video-iframe');
+            const iframeWindow = iframe.contentWindow;
+
+            try {
+                // Intentar manipular el iframe para ajustar el volumen
+                iframeWindow.postMessage('{"event":"command","func":"setVolume","args":[1]}', '*');
+            } catch (error) {
+                console.error('No se pudo ajustar el volumen:', error);
+            }
+        });
+        
+        // Tiempo de actualización en milisegundos, 1 hora serían 3600000 milisegundos
+        const refreshTime = 3600000; 
+    
+        setInterval(function() {
+            // Actualizar el iframe de Windy
+            const windyIframe = document.getElementById('windy-iframe');
+            windyIframe.src = windyIframe.src;
+
+            // Actualizar los iframes de Instagram
+            const instagram1Iframe = document.getElementById('instagram-1');
+            instagram1Iframe.src = instagram1Iframe.src;
+
+            const instagram2Iframe = document.getElementById('instagram-2');
+            instagram2Iframe.src = instagram2Iframe.src;
+
+            // Actualizar el iframe de Meteoblue
+            const meteoblueIframe = document.getElementById('meteoblue-iframe');
+            meteoblueIframe.src = meteoblueIframe.src;
+        }, refreshTime);
+    </script>
+</body>
+</html>
