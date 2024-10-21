@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
+            overflow: auto;
         }
         #controls {
             position: fixed;
@@ -48,18 +48,14 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        #kpIndexImage {
-            display: none;
-            width: 100%;
-            height: auto;
-        }
     </style>
     <!-- Scripts necesarios -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- Cargar moment.js antes que moment-timezone -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Cargar moment-timezone después de moment.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -92,7 +88,6 @@
 
 <!-- Contenedor para el índice KP -->
 <div id="kpIndexContainer"></div>
-<img id="kpIndexImage"/>
 
 <!-- Scripts -->
 <script>
