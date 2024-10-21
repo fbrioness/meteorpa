@@ -10,7 +10,6 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
         }
         #controls {
             position: fixed;
@@ -27,31 +26,22 @@
             width: 100%;
             max-width: 400px;
         }
-        /* Contenedor para mantener la proporción 9:16 */
-        .iframe-container {
-            position: relative;
+        #windyFrame {
             width: 100%;
-            padding-top: 177.78%; /* (16 / 9) * 100% */
-            overflow: hidden;
-        }
-        .iframe-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            height: 50vh; /* Ocupa la mitad de la pantalla */
             border: none;
+            margin-top: 60px; /* Ajusta según la altura del control */
         }
-        /* Contenedor para el índice KP */
         #kpIndexContainer {
             width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
+            height: 50vh; /* Ocupa la otra mitad de la pantalla */
+            margin: 0 auto;
         }
         #kpIndexImage {
             display: none;
             width: 100%;
-            height: auto;
+            height: 100%;
+            margin: 0 auto;
         }
     </style>
     <!-- Scripts necesarios -->
@@ -85,10 +75,8 @@
     </select>
 </div>
 
-<!-- Contenedor del iframe con proporción 9:16 -->
-<div class="iframe-container">
-    <iframe id="windyFrame" src="" allowfullscreen></iframe>
-</div>
+<!-- Iframe de Windy -->
+<iframe id="windyFrame" src="" frameborder="0"></iframe>
 
 <!-- Contenedor para el índice KP -->
 <div id="kpIndexContainer"></div>
@@ -138,7 +126,19 @@
             Highcharts.chart('kpIndexContainer', {
                 chart: {
                     type: 'column',
-                    backgroundColor: '#f0f0f0'
+                    backgroundColor: '#f0f0f0',
+                    events: {
+                        load: function () {
+                            var chart = this;
+                            setTimeout(function () {
+                                html2canvas(document.getElementById('kpIndexContainer')).then(canvas => {
+                                    var imgData = canvas.toDataURL('image/png');
+                                    $('#kpIndexImage').attr('src', imgData).show();
+                                    $('#kpIndexContainer').hide();
+                                });
+                            }, 1000); // Espera un segundo para asegurarse de que el gráfico se renderice completamente
+                        }
+                    }
                 },
                 title: {
                     text: 'Índice K Planetario Estimado (Últimas 48 horas)'
