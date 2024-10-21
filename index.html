@@ -126,7 +126,7 @@
 
     function updateIframe(lat, lon, detailLat, detailLon) {
         const baseUrl = 'https://embed.windy.com/embed.html';
-        const params = `?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=7&overlay=satellite&product=satellite&level=surface&lat=${lat}&lon=${lon}&detailLat=${detailLat}&detailLon=${detailLon}&detail=true`;
+        const params = `?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=m/s&zoom=7&overlay=satellite&product=satellite&level=surface&lat=${lat}&lon=${lon}&detailLat=${detailLat}&detailLon=${detailLon}&detail=true`;
         const src = baseUrl + params;
         windyFrame.src = src;
     }
