@@ -4,13 +4,62 @@
     <meta charset="UTF-8">
     <title>Pronóstico del Tiempo e Índice KP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Vincular el archivo CSS externo -->
-    <link rel="stylesheet" href="styles.css">
+    <!-- Estilos CSS -->
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #controls {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #ffffff;
+            z-index: 1000;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #controls select {
+            font-size: 16px;
+            margin-right: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        /* Contenedor para mantener la proporción 9:16 */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-top: 177.78%; /* (16 / 9) * 100% */
+            overflow: hidden;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* Contenedor para el índice KP */
+        #kpIndexContainer {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #kpIndexImage {
+            display: none;
+            width: 100%;
+            height: auto;
+        }
+    </style>
     <!-- Scripts necesarios -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -36,30 +85,14 @@
     </select>
 </div>
 
-<div class="panel">
-    <!-- Logo (descomenta y ajusta la ruta si tienes un logo) -->
-    <!-- <img src="ruta_al_logo/logo-dga.png" alt="Logo DGA" class="logo-dga"> -->
-
-    <!-- Contenedor del iframe de Windy con proporción 9:16 -->
-    <div class="iframe-container windy-iframe">
-        <iframe id="windyFrame" src="" allowfullscreen></iframe>
-    </div>
-
-    <!-- Si tienes otros iframes, puedes agregarlos aquí -->
-    <!--
-    <div class="right-iframes">
-        <div class="iframe-container top-right-iframe">
-            <iframe src="otra_url"></iframe>
-        </div>
-        <div class="iframe-container bottom-right-iframe">
-            <iframe src="otra_url"></iframe>
-        </div>
-    </div>
-    -->
+<!-- Contenedor del iframe con proporción 9:16 -->
+<div class="iframe-container">
+    <iframe id="windyFrame" src="" allowfullscreen></iframe>
 </div>
 
 <!-- Contenedor para el índice KP -->
 <div id="kpIndexContainer"></div>
+<img id="kpIndexImage"/>
 
 <!-- Scripts -->
 <script>
