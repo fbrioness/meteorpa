@@ -2,59 +2,184 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <title>Pronóstico del Tiempo e Índice KP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meteorología</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- Estilos CSS -->
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #controls {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #ffffff;
+            z-index: 1000;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #controls select {
+            font-size: 16px;
+            margin-right: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        #windyFrame {
+            width: 100%;
+            height: 50vh; /* Ocupa la mitad de la pantalla */
+            border: none;
+            margin-top: 60px; /* Ajusta según la altura del control */
+        }
+        #kpIndexContainer {
+            width: 100%;
+            height: 50vh; /* Ocupa la otra mitad de la pantalla */
+            margin: 0 auto;
+        }
+        #kpIndexImage {
+            display: none;
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+        }
+    </style>
+    <!-- Scripts necesarios -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-    <div class="panel">
-        <img src="https://dga.mop.gob.cl/common/images/dga.jpg" alt="Logo DGA" class="logo-dga">
-        <!-- Iframe de Windy a la izquierda -->
-        <iframe id="windy-iframe" width="550" height="1030" src="https://embed.windy.com/embed2.html?lat=-40.246&lon=-72.026&detailLat=-36.440&detailLon=-70.6500&width=550&height=1030&zoom=5&level=surface&overlay=satellite&product=satellite&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
-        <div class="iframe-container">
-            <iframe id="instagram-1" src="https://www.instagram.com/mop_cl/embed" width="550" height="515" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
-            <iframe id="instagram-2" src="https://fbrioness.github.io/KPindex/" width="550" height="515" frameborder="0" scrolling="no" allowtransparency="true"></iframe>    
-        </div>
-        <!-- Contenedor para los iframes de la derecha -->
-        <div class="right-iframes">
-            <!-- Iframe superior derecho -->
-            <iframe id="video-iframe" src="https://www.youtube.com/embed/wALLwCjrg3A?si=O5KjozPgGFpqPvJK" width="820" height="463" allow="" fullscreen encrypted-media" allowfullscreen="" allowscriptaccess="always" scrolling="no"></iframe>
-            <!-- Iframe inferior derecho -->
-            <iframe id="meteoblue-iframe" class="bottom-right-iframe" src="https://www.meteoblue.com/es/tiempo/widget/daily/santiago-de-chile_chile_3871336?geoloc=fixed&days=7&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&precipunit=MILLIMETER&coloured=coloured&pictoicon=0&pictoicon=1&maxtemperature=0&maxtemperature=1&mintemperature=0&mintemperature=1&windspeed=0&windspeed=1&windgust=0&winddirection=0&winddirection=1&uv=0&humidity=0&precipitation=0&precipitation=1&precipitationprobability=0&precipitationprobability=1&spot=0&spot=1&pressure=0&layout=light" frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="width: 820px; height: 560px"></iframe>
-        </div>
-    </div>
-    <script>
-            document.getElementById('video-iframe').addEventListener('load', function() {
-            const iframe = document.getElementById('video-iframe');
-            const iframeWindow = iframe.contentWindow;
 
-            try {
-                // Intentar manipular el iframe para ajustar el volumen
-                iframeWindow.postMessage('{"event":"command","func":"setVolume","args":[1]}', '*');
-            } catch (error) {
-                console.error('No se pudo ajustar el volumen:', error);
-            }
+<div id="controls">
+    <select id="regionSelect">
+        <option value="">Selecciona una región</option>
+        <option value="-18.4783,-70.3126,-18.4783,-70.3126">Arica y Parinacota - Arica</option>
+        <option value="-20.2133,-70.1578,-20.2133,-70.1578">Tarapacá - Iquique</option>
+        <option value="-23.6500,-70.4000,-23.6500,-70.4000">Antofagasta - Antofagasta</option>
+        <option value="-27.3667,-70.3333,-27.3667,-70.3333">Atacama - Copiapó</option>
+        <option value="-29.9533,-71.3395,-29.9533,-71.3395">Coquimbo - La Serena</option>
+        <option value="-32.8905,-71.2489,-32.8905,-71.2489">Valparaíso - Valparaíso</option>
+        <option value="-33.4489,-70.6693,-33.4489,-70.6693">Región Metropolitana - Santiago</option>
+        <option value="-34.1708,-70.7444,-34.1708,-70.7444">O'Higgins - Rancagua</option>
+        <option value="-35.4264,-71.6554,-35.4264,-71.6554">Maule - Talca</option>
+        <option value="-36.8260,-73.0498,-36.8260,-73.0498">Biobío - Concepción</option>
+        <option value="-36.6066,-72.1034,-36.6066,-72.1034">Ñuble - Chillán</option>
+        <option value="-38.7359,-72.5904,-38.7359,-72.5904">La Araucanía - Temuco</option>
+        <option value="-39.8196,-73.2459,-39.8196,-73.2459">Los Ríos - Valdivia</option>
+        <option value="-41.4689,-72.9411,-41.4689,-72.9411">Los Lagos - Puerto Montt</option>
+        <option value="-45.5711,-72.0683,-45.5711,-72.0683">Aysén - Coyhaique</option>
+        <option value="-53.1638,-70.9171,-53.1638,-70.9171">Magallanes - Punta Arenas</option>
+    </select>
+</div>
+
+<!-- Iframe de Windy -->
+<iframe id="windyFrame" src="" frameborder="0"></iframe>
+
+<!-- Contenedor para el índice KP -->
+<div id="kpIndexContainer"></div>
+<img id="kpIndexImage"/>
+
+<!-- Scripts -->
+<script>
+    // Código JavaScript para el mapa de Windy
+    const windyFrame = document.getElementById('windyFrame');
+    const regionSelect = document.getElementById('regionSelect');
+
+    function updateIframe(lat, lon, detailLat, detailLon) {
+        const baseUrl = 'https://embed.windy.com/embed.html';
+        const params = `?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=7&overlay=satellite&product=satellite&level=surface&lat=${lat}&lon=${lon}&detailLat=${detailLat}&detailLon=${detailLon}&detail=true`;
+        const src = baseUrl + params;
+        windyFrame.src = src;
+    }
+
+    regionSelect.addEventListener('change', function() {
+        if (this.value) {
+            const [lat, lon, detailLat, detailLon] = this.value.split(',');
+            updateIframe(lat, lon, detailLat, detailLon);
+        }
+    });
+
+    // Cargar una ubicación predeterminada al inicio (por ejemplo, Santiago)
+    updateIframe(-33.4489, -70.6693, -33.4489, -70.6693);
+
+    // Código JavaScript para el índice KP
+    $(document).ready(function() {
+        $.getJSON('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', function(response) {
+            // Eliminar el encabezado de la respuesta
+            const data = response.slice(1);
+
+            // Filtrar los datos para obtener solo los últimos 2 días (48 horas)
+            const now = moment();
+            const twoDaysAgo = now.clone().subtract(48, 'hours');
+            const filteredData = data.filter(item => moment(item[0]).isBetween(twoDaysAgo, now));
+
+            const categories = filteredData.map(item => {
+                const start = moment.tz(item[0], "America/Santiago");
+                const end = start.clone().add(3, 'hours');
+                return `${start.format('DD-MMMM HH:mm')} a ${end.format('HH:mm')}`;
+            });
+            const values = filteredData.map(item => parseFloat(item[1]));
+
+            Highcharts.chart('kpIndexContainer', {
+                chart: {
+                    type: 'column',
+                    backgroundColor: '#f0f0f0',
+                    events: {
+                        load: function () {
+                            var chart = this;
+                            setTimeout(function () {
+                                html2canvas(document.getElementById('kpIndexContainer')).then(canvas => {
+                                    var imgData = canvas.toDataURL('image/png');
+                                    $('#kpIndexImage').attr('src', imgData).show();
+                                    $('#kpIndexContainer').hide();
+                                });
+                            }, 1000); // Espera un segundo para asegurarse de que el gráfico se renderice completamente
+                        }
+                    }
+                },
+                title: {
+                    text: 'Índice K Planetario Estimado (Últimas 48 horas)'
+                },
+                xAxis: {
+                    categories: categories,
+                    crosshair: true,
+                    title: {
+                        text: 'Hora Local de Chile'
+                    },
+                    labels: {
+                        rotation: -90
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    max: 9,
+                    tickInterval: 1,
+                    title: {
+                        text: 'Índice Kp'
+                    }
+                },
+                series: [{
+                    name: 'Índice Kp',
+                    data: values,
+                    colorByPoint: true,
+                    colors: values.map(value => {
+                        if (value >= 7) return '#C80000';
+                        if (value >= 5) return '#FF0000';
+                        if (value >= 4) return '#FF9600';
+                        if (value >= 3) return '#FFC800';
+                        return '#92D050';
+                    })
+                }],
+                exporting: {
+                    enabled: false // Deshabilita el botón de exportación en el gráfico
+                }
+            });
         });
-        
-        // Tiempo de actualización en milisegundos, 1 hora serían 3600000 milisegundos
-        const refreshTime = 3600000; 
-    
-        setInterval(function() {
-            // Actualizar el iframe de Windy
-            const windyIframe = document.getElementById('windy-iframe');
-            windyIframe.src = windyIframe.src;
+    });
+</script>
 
-            // Actualizar los iframes de Instagram
-            const instagram1Iframe = document.getElementById('instagram-1');
-            instagram1Iframe.src = instagram1Iframe.src;
-
-            const instagram2Iframe = document.getElementById('instagram-2');
-            instagram2Iframe.src = instagram2Iframe.src;
-
-            // Actualizar el iframe de Meteoblue
-            const meteoblueIframe = document.getElementById('meteoblue-iframe');
-            meteoblueIframe.src = meteoblueIframe.src;
-        }, refreshTime);
-    </script>
 </body>
 </html>
